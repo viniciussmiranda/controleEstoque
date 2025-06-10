@@ -1,16 +1,17 @@
-import java.util.*;
+import java.util.Scanner;
 
 public class ControleEstoque {
-    static List<Produto> produtos = new ArrayList<>();
+    static final int MAX_PRODUTOS = 100;
+    static Produto[] produtos = new Produto[MAX_PRODUTOS];
+    static int totalProdutos = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
         System.out.println("Programa iniciado. Digite as opções conforme o menu:");
 
         while (true) {
             int opcao = scanner.nextInt();
-            scanner.nextLine(); // consumir quebra de linha
+            scanner.nextLine(); 
 
             if (opcao == 0) break;
 
@@ -40,83 +41,147 @@ public class ControleEstoque {
                     System.out.println("Opcao invalida");
             }
         }
-
         scanner.close();
     }
 
     static void cadastrarProduto(Scanner sc) {
-    System.out.println("Digite o nome do produto:");
-    String nome = sc.nextLine();
+        if (totalProdutos >= MAX_PRODUTOS) {
+            System.out.println("Limite de produtos atingido.");
+            return;
+        }
+        System.out.println("Digite o nome do produto:");
+        String nome = sc.nextLine();
+        System.out.println("Digite a quantidade em estoque:");
+        int qtd = sc.nextInt();
+        System.out.println("Digite o preço unitário:");
+        double preco = sc.nextDouble();
+        sc.nextLine();
+        System.out.println("Digite a categoria:");
+        String categoria = sc.nextLine();
+        System.out.println("Digite a quantidade mínima:");
+        int qtdMin = sc.nextInt();
+        sc.nextLine();
 
-    System.out.println("Digite a quantidade em estoque:");
-    int qtd = sc.nextInt();
-
-    System.out.println("Digite o preço unitário:");
-    double preco = sc.nextDouble();
-    sc.nextLine();
-
-    System.out.println("Digite a categoria:");
-    String categoria = sc.nextLine();
-
-    System.out.println("Digite a quantidade mínima:");
-    int qtdMin = sc.nextInt();
-    sc.nextLine();
-
-    produtos.add(new Produto(nome, qtd, preco, categoria, qtdMin));
-    System.out.println("Produto cadastrado com sucesso.");
-}
+        produtos[totalProdutos++] = new Produto(nome, qtd, preco, categoria, qtdMin);
+        System.out.println("Produto cadastrado com sucesso.");
+    }
 
     static void listarProdutos() {
-        for (Produto p : produtos) {
-            System.out.println(p);
+        for (int i = 0; i < totalProdutos; i++) {
+            System.out.println(produtos[i]);
         }
     }
 
     static void filtrarPorCategoria(Scanner sc) {
         String cat = sc.nextLine();
-        for (Produto p : produtos) {
-            if (p.getCategoria().equalsIgnoreCase(cat)) {
-                System.out.println(p);
+        for (int i = 0; i < totalProdutos; i++) {
+            if (produtos[i].getCategoria().equalsIgnoreCase(cat)) {
+                System.out.println(produtos[i]);
             }
         }
     }
 
     static void ordenarProdutos() {
-        produtos.sort(Comparator.comparing(Produto::getNomeDescricao));
+        // Ordenação simples por nome (bubble sort)
+        for (int i = 0; i < totalProdutos - 1; i++) {
+            for (int j = 0; j < totalProdutos - i - 1; j++) {
+                if (produtos[j].getNomeDescricao().compareToIgnoreCase(produtos[j + 1].getNomeDescricao()) > 0) {
+                    Produto temp = produtos[j];
+                    produtos[j] = produtos[j + 1];
+                    produtos[j + 1] = temp;
+                }
+            }
+        }
         System.out.println("Produtos ordenados");
     }
 
     static void removerProduto(Scanner sc) {
         String nome = sc.nextLine();
-        produtos.removeIf(p -> p.getNomeDescricao().equalsIgnoreCase(nome));
+        for (int i = 0; i < totalProdutos; i++) {
+            if (produtos[i].getNomeDescricao().equalsIgnoreCase(nome)) {
+              
+                for (int j = i; j < totalProdutos - 1; j++) {
+                    produtos[j] = produtos[j + 1];
+                }
+                produtos[--totalProdutos] = null;
+                System.out.println("Produto removido.");
+                return;
+            }
+        }
+        System.out.println("Produto não encontrado.");
     }
 
     static void atualizarPreco(Scanner sc) {
         String nome = sc.nextLine();
         double novoPreco = sc.nextDouble();
         sc.nextLine();
-        for (Produto p : produtos) {
-            if (p.getNomeDescricao().equalsIgnoreCase(nome)) {
-                p.setPrecoUnitario(novoPreco);
-                break;
+        for (int i = 0; i < totalProdutos; i++) {
+            if (produtos[i].getNomeDescricao().equalsIgnoreCase(nome)) {
+                produtos[i].setPrecoUnitario(novoPreco);
+                System.out.println("Preço atualizado.");
+                return;
             }
         }
+        System.out.println("Produto não encontrado.");
     }
 
     static void listarComSubtotal() {
-        Map<String, Double> subtotalPorCategoria = new HashMap<>();
-        for (Produto p : produtos) {
-            subtotalPorCategoria.put(
-                p.getCategoria(),
-                subtotalPorCategoria.getOrDefault(p.getCategoria(), 0.0) + p.getSubtotal()
-            );
+    
+        String[] categorias = new String[MAX_PRODUTOS];
+        double[] subtotais = new double[MAX_PRODUTOS];
+        int totalCategorias = 0;
+
+        for (int i = 0; i < totalProdutos; i++) {
+            String cat = produtos[i].getCategoria();
+            double subtotal = produtos[i].getSubtotal();
+            int idx = -1;
+            for (int j = 0; j < totalCategorias; j++) {
+                if (categorias[j].equalsIgnoreCase(cat)) {
+                    idx = j;
+                    break;
+                }
+            }
+            if (idx == -1) {
+                categorias[totalCategorias] = cat;
+                subtotais[totalCategorias] = subtotal;
+                totalCategorias++;
+            } else {
+                subtotais[idx] += subtotal;
+            }
         }
+
         double totalGeral = 0;
-        for (String cat : subtotalPorCategoria.keySet()) {
-            System.out.println(cat);
-            System.out.println(subtotalPorCategoria.get(cat));
-            totalGeral += subtotalPorCategoria.get(cat);
+        for (int i = 0; i < totalCategorias; i++) {
+            System.out.println(categorias[i]);
+            System.out.println(subtotais[i]);
+            totalGeral += subtotais[i];
         }
         System.out.println(totalGeral);
+    }
+}
+
+
+class Produto {
+    private String nome;
+    private int quantidade;
+    private double precoUnitario;
+    private String categoria;
+    private int quantidadeMinima;
+
+    public Produto(String nome, int quantidade, double precoUnitario, String categoria, int quantidadeMinima) {
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.precoUnitario = precoUnitario;
+        this.categoria = categoria;
+        this.quantidadeMinima = quantidadeMinima;
+    }
+
+    public String getNomeDescricao() { return nome; }
+    public String getCategoria() { return categoria; }
+    public void setPrecoUnitario(double preco) { this.precoUnitario = preco; }
+    public double getSubtotal() { return quantidade * precoUnitario; }
+
+    public String toString() {
+        return nome + " | " + quantidade + " | " + precoUnitario + " | " + categoria + " | " + quantidadeMinima;
     }
 }
