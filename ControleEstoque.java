@@ -158,29 +158,3 @@ public class ControleEstoque {
         System.out.println(totalGeral);
     }
 }
-
-
-class Produto {
-    private String nome;
-    private int quantidade;
-    private double precoUnitario;
-    private String categoria;
-    private int quantidadeMinima;
-
-    public Produto(String nome, int quantidade, double precoUnitario, String categoria, int quantidadeMinima) {
-        this.nome = nome;
-        this.quantidade = quantidade;
-        this.precoUnitario = precoUnitario;
-        this.categoria = categoria;
-        this.quantidadeMinima = quantidadeMinima;
-    }
-
-    public String getNomeDescricao() { return nome; }
-    public String getCategoria() { return categoria; }
-    public void setPrecoUnitario(double preco) { this.precoUnitario = preco; }
-    public double getSubtotal() { return quantidade * precoUnitario; }
-
-    public String toString() {
-        return nome + " | " + quantidade + " | " + precoUnitario + " | " + categoria + " | " + quantidadeMinima;
-    }
-}
