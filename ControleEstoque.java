@@ -7,7 +7,7 @@ public class ControleEstoque {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Programa iniciado. Digite as opções conforme o menu:");
+        System.out.println("escolha uma das opções do menu:");
 
         while (true) {
             int opcao = scanner.nextInt();
@@ -38,7 +38,7 @@ public class ControleEstoque {
                     listarComSubtotal();
                     break;
                 default:
-                    System.out.println("Opcao invalida");
+                    System.out.println("opção inválida");
             }
         }
         scanner.close();
@@ -46,24 +46,24 @@ public class ControleEstoque {
 
     static void cadastrarProduto(Scanner sc) {
         if (totalProdutos >= MAX_PRODUTOS) {
-            System.out.println("Limite de produtos atingido.");
+            System.out.println("limite de produtos atingido.");
             return;
         }
-        System.out.println("Digite o nome do produto:");
+        System.out.println("digite o nome do produto:");
         String nome = sc.nextLine();
-        System.out.println("Digite a quantidade em estoque:");
+        System.out.println("digite a quantidade em estoque:");
         int qtd = sc.nextInt();
-        System.out.println("Digite o preço unitário:");
+        System.out.println("digite o preço unitário:");
         double preco = sc.nextDouble();
         sc.nextLine();
-        System.out.println("Digite a categoria:");
+        System.out.println("digite a categoria:");
         String categoria = sc.nextLine();
-        System.out.println("Digite a quantidade mínima:");
+        System.out.println("digite a quantidade mínima:");
         int qtdMin = sc.nextInt();
         sc.nextLine();
 
         produtos[totalProdutos++] = new Produto(nome, qtd, preco, categoria, qtdMin);
-        System.out.println("Produto cadastrado com sucesso.");
+        System.out.println("produto cadastrado com sucesso!");
     }
 
     static void listarProdutos() {
@@ -82,7 +82,6 @@ public class ControleEstoque {
     }
 
     static void ordenarProdutos() {
-        // Ordenação simples por nome (bubble sort)
         for (int i = 0; i < totalProdutos - 1; i++) {
             for (int j = 0; j < totalProdutos - i - 1; j++) {
                 if (produtos[j].getNomeDescricao().compareToIgnoreCase(produtos[j + 1].getNomeDescricao()) > 0) {
@@ -92,7 +91,7 @@ public class ControleEstoque {
                 }
             }
         }
-        System.out.println("Produtos ordenados");
+        System.out.println("produtos ordenados");
     }
 
     static void removerProduto(Scanner sc) {
@@ -104,11 +103,11 @@ public class ControleEstoque {
                     produtos[j] = produtos[j + 1];
                 }
                 produtos[--totalProdutos] = null;
-                System.out.println("Produto removido.");
+                System.out.println("produto removido.");
                 return;
             }
         }
-        System.out.println("Produto não encontrado.");
+        System.out.println("produto não encontrado.");
     }
 
     static void atualizarPreco(Scanner sc) {
@@ -122,7 +121,7 @@ public class ControleEstoque {
                 return;
             }
         }
-        System.out.println("Produto não encontrado.");
+        System.out.println("produto não encontrado.");
     }
 
     static void listarComSubtotal() {
